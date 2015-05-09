@@ -17,7 +17,7 @@ class ProductTest < ActiveSupport::TestCase
 		product.price = -1
 		assert product.invalid?
 		assert_equal ["must be greater than or equal to 0.01"],
-		  product.errors[:errors]
+		  product.errors[:price]
 
 		product.price = 0
 		assert product.invalid?
@@ -28,23 +28,34 @@ class ProductTest < ActiveSupport::TestCase
 		assert product.valid?
 	end
 
-	def new_product(image_url)
-		Product.new(title: "my title",
-					description: "yyy",
-					price: 1,
-					image_url: image_url)
-	end
-	test "image_url" do
-		ok = %w{ fred.gif fred.jpg fred.png FRED.JPG FRED.jpg
-				http://a.b.c/x/y/z/fred.gif }
-		bad = %w{ fred.doc fred.gif/more fred.gif.more }
-		ok.each do |name|
-			assert new_product(name).valid?, "#{name} should be valid"
-		end
-		bad.each do |name|
-			assert new_product(name).invalid?, "#{name} shouldn't be valid"
-		end
-	end	
+
+	test "product title is longer than 10 characters" do
+		product = Product.new(title: "short",
+							  description: "ff",
+							  price: 10.00,
+							  image_url: "ssd.jpg")
+		assert product.invalid?
+		assert_equal ["title must be longer than 10 characters"],
+		  product.errors[:title]
+	end 
+
+def new_product(image_url)
+  Product.new(title:       "My Book Title",
+              description: "yyy",
+              price:       1,
+              image_url:   image_url)
+  end
+test "image url" do
+  aok = %w{ fredh.jpg fred.gif fred.png FRED.JPG FRED.jpg 
+    http://a.b.c/x/y/z/fred.gif }
+  bad = %w{ fred.doc fred.gif/more fred.gif.more }
+  aok.each do |name|
+    assert new_product(name).valid?, "#{name} should be valid"
+  end
+  bad.each do |name|
+    assert new_product(name).invalid?, "#{name} shouldn't be valid"
+  end
+end	
 
 	class ProductTest < ActiveSupport::TestCase
 		fixtures :products
